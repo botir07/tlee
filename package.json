@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "netlify dev" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "netlify dev"
+  },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "bcryptjs": "^3.0.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "express": "^5.1.0"
   },
-  "devDependencies": { "netlify-cli": "^23.0.0" }
+  "devDependencies": {
+    "netlify-cli": "^23.0.0"
+  }
 }
