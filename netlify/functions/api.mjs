@@ -15,9 +15,23 @@ function getUser(request) {
   if (!token) return null;
   try { return jwt.verify(token, process.env.JWT_SECRET); } catch { return null; }
 }
+let schemaReady = null;
+function ensureSchema(sql) {
+  if (!schemaReady) {
+    schemaReady = sql`CREATE TABLE IF NOT EXISTS users (
+      id BIGSERIAL PRIMARY KEY,
+      name VARCHAR(80) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`.catch(e => { schemaReady = null; throw e; });
+  }
+  return schemaReady;
+}
 export default async (request) => {
   if (!process.env.DATABASE_URL || !process.env.JWT_SECRET) return json({ error: 'Server sozlamalari to‘liq emas.' }, 500);
   const sql = neon(process.env.DATABASE_URL);
+  try { await ensureSchema(sql); } catch (e) { console.error(e); return json({ error: 'Ma’lumotlar bazasiga ulanib bo‘lmadi.' }, 500); }
   const url = new URL(request.url);
   if (request.method === 'GET' && url.searchParams.get('action') === 'me') {
     const user = getUser(request);
